@@ -6,7 +6,7 @@ import KeywordInput from '@/components/KeywordInput';
 import ResultsList from '@/components/ResultsList';
 
 export default function Home() {
-  const [pdfs, setPdfs] = useState([]);
+  const [pdfs, setPdfs] = useState<any[]>([]);
   const [keywords, setKeywords] = useState([]);
   const [filteredPdfs, setFilteredPdfs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -32,7 +32,7 @@ export async function POST(request: { formData: () => any; }) {
     
     for (const file of files) {
       if (file.type !== 'application/pdf') {
-        continue;
+        continue; 
       }
       
       const id = uuidv4();
@@ -67,8 +67,9 @@ export async function POST(request: { formData: () => any; }) {
     
   } catch (error) {
     console.error('Error uploading PDFs:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { message: 'Error uploading files', error: error.message },
+      { message: 'Error uploading files', error: errorMessage },
       { status: 500 }
     );
   }
