@@ -2,16 +2,6 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { getPdfById } from '@/lib/db';
 
-async function fetchPdfById(id: string): Promise<Pdf | null> {
-  if (id === 'example') {
-    return {
-      path: '/path/to/example.pdf',
-      filename: 'example.pdf',
-    };
-  }
-  return null;
-}
-
 interface Pdf {
   path: string;
   filename: string;
@@ -29,7 +19,7 @@ export async function GET(request: { url: string | URL; }) {
       );
     }
     
-    const pdf = await fetchPdfById(id);
+    const pdf = await getPdfById(id) as Pdf | null;
     
     if (!pdf) {
       return NextResponse.json(
