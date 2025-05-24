@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import FileUpload from '@/components/FileUpload';
 import KeywordInput from '@/components/KeywordInput';
 import ResultsList from '@/components/ResultsList';
+import FilterInput from '@/components/FilterInput';
 
 export default function Home() {
   const [pdfs, setPdfs] = useState<any[]>([]);
   const [keywords, setKeywords] = useState([]);
+  const [filters, setFilters] = useState([]);
   const [filteredPdfs, setFilteredPdfs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -30,11 +32,11 @@ export default function Home() {
 
   useEffect(() => {
     const searchPdfs = async () => {
-      if (keywords.length === 0) {
+      if (keywords.length === 0 && filters.length === 0) {
         setFilteredPdfs([]);
+        setMessage('');
         return;
       }
-
       setIsLoading(true);
       try {
         const response = await fetch('/api/pdf/search', {
@@ -42,7 +44,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ keywords }),
+          body: JSON.stringify({ keywords, filters }),
         });
 
         if (response.ok) {
@@ -61,7 +63,7 @@ export default function Home() {
     };
 
     searchPdfs();
-  }, [keywords]);
+  }, [keywords, filters]);
 
   const handleFileUpload = async (uploadedFiles: any[]) => {
     setIsLoading(true);
@@ -110,14 +112,18 @@ export default function Home() {
             </div>
           )}
           
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Enter Keywords</h2>
-            <KeywordInput 
-              onKeywordsChange={setKeywords}
-              isLoading={isLoading}
-            />
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Enter Keywords</h2>
+          <KeywordInput
+            onKeywordsChange={setKeywords}
+            isLoading={isLoading}
+          />
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-2">Add Filters</h3>
+            <FilterInput onFiltersChange={setFilters} isLoading={isLoading} />
           </div>
         </div>
+      </div>
         
         <div>
           <h2 className="text-xl font-semibold mb-4">Results</h2>

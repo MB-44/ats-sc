@@ -27,7 +27,9 @@ export default function FileUpload({ onUpload, isLoading }) {
     onDrop,
     accept: {
       'application/pdf': ['.pdf']
-    }
+    },
+    maxFiles: 200,
+    multiple: true
   });
 
   const removeFile = (index) => {

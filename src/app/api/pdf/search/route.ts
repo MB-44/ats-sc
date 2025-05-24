@@ -4,16 +4,9 @@ import { searchPdfsByKeywords } from '@/lib/db';
 export async function POST(request: { json: () => any; }) {
   try {
     const data = await request.json();
-    const { keywords } = data;
-    
-    if (!keywords || !Array.isArray(keywords) || keywords.length === 0) {
-      return NextResponse.json(
-        { message: 'No keywords provided for search' },
-        { status: 400 }
-      );
-    }
-    
-    const results = await searchPdfsByKeywords(keywords);
+    const { keywords = [], filters = {} } = data;
+
+    const results = await searchPdfsByKeywords(Array.isArray(keywords) ? keywords : [], filters);
     
     return NextResponse.json({
       message: `Found ${results.length} matching documents`,
