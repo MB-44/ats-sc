@@ -25,8 +25,8 @@ export default function ResultsList({ pdfs, keywords, isFiltered, isLoading }) {
       <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-gray-50">
         <FileText className="h-12 w-12 text-gray-400" />
         <p className="mt-4 text-gray-600">
-          {isFiltered 
-            ? 'No PDFs match your keywords' 
+          {isFiltered
+            ? 'No PDFs match your search criteria'
             : 'No PDFs uploaded yet. Start by uploading some files.'}
         </p>
       </div>
