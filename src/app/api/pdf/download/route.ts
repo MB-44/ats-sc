@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { getPdfById } from '@/lib/db';
 
+
 interface Pdf {
   path: string;
   filename: string;
@@ -19,7 +20,11 @@ export async function GET(request: { url: string | URL; }) {
       );
     }
     
+
+    const view = searchParams.get('view');
+    const pdf = await getPdfById(id);
     const pdf = await getPdfById(id) as Pdf | null;
+
     
     if (!pdf) {
       return NextResponse.json(
@@ -34,7 +39,8 @@ export async function GET(request: { url: string | URL; }) {
       const response = new NextResponse(fileBuffer);
       
       response.headers.set('Content-Type', 'application/pdf');
-      response.headers.set('Content-Disposition', `attachment; filename="${encodeURIComponent(pdf.filename)}"`);
+      const disposition = view === '1' ? 'inline' : 'attachment';
+      response.headers.set('Content-Disposition', `${disposition}; filename="${encodeURIComponent(pdf.filename)}"`);
       
       return response;
     } catch (fileError) {

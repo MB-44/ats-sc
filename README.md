@@ -14,7 +14,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The interface lets you upload many PDFs at once, search them by keywords or custom filters (such as education or college name), and view or download the filtered files.
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 

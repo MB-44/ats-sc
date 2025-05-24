@@ -97,7 +97,7 @@ export async function getPdfById(id) {
  * @param {string[]} keywords - Array of keywords to search for
  * @returns {Promise<Array>} - Array of matching PDF objects with match counts
  */
-export async function searchPdfsByKeywords(keywords) {
+export async function searchPdfsByKeywords(keywords, filters = {}) {
   const db = await initDb();
   
   try {
@@ -106,23 +106,37 @@ export async function searchPdfsByKeywords(keywords) {
       `SELECT id, filename, filepath as path, upload_date as uploadDate, content FROM pdfs`
     );
     
-    // Filter and rank PDFs by keyword matches
+    const matchesFilters = (content) => {
+      if (!filters || Object.keys(filters).length === 0) return true;
+      const lower = content.toLowerCase();
+      for (const key of Object.keys(filters)) {
+        const val = String(filters[key] || '').toLowerCase();
+        if (val && !lower.includes(val)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    // Filter and rank PDFs by keyword matches and custom filters
     const results = pdfs
       .map(pdf => {
         const { totalMatches, keywordCounts } = countKeywordMatches(pdf.content, keywords);
         const snippets = extractContextSnippets(pdf.content, keywords);
-        
+
         return {
           id: pdf.id,
           filename: pdf.filename,
           uploadDate: pdf.uploadDate,
+          content: pdf.content,
           matchCount: totalMatches,
           keywordMatches: keywordCounts,
-          matchSnippets: snippets.slice(0, 5) // Limit to 5 snippets
+          matchSnippets: snippets.slice(0, 5)
         };
       })
-      .filter(pdf => pdf.matchCount > 0)
-      .sort((a, b) => b.matchCount - a.matchCount); // Sort by match count (descending)
+      .filter(pdf => matchesFilters(pdf.content) && (keywords.length === 0 || pdf.matchCount > 0))
+      .sort((a, b) => b.matchCount - a.matchCount)
+      .map(({ content, ...rest }) => rest);
     
     return results;
   } finally {

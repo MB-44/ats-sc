@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, ExternalLink, Clipboard, Check } from 'lucide-react';
+import { Download, ExternalLink, Clipboard, Check, Eye, X as Close } from 'lucide-react';
 
 export default function PdfItem({ pdf, keywords }) {
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -103,14 +104,21 @@ export default function PdfItem({ pdf, keywords }) {
           <div className="mb-3 flex justify-between">
             <h3 className="font-medium">Document Preview</h3>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={copyToClipboard}
                 className="text-gray-500 hover:text-gray-700 p-1"
                 title="Copy content"
               >
                 {copied ? <Check className="h-5 w-5 text-green-500" /> : <Clipboard className="h-5 w-5" />}
               </button>
-              <a 
+              <button
+                onClick={() => setShowViewer(true)}
+                className="text-gray-500 hover:text-gray-700 p-1"
+                title="View PDF"
+              >
+                <Eye className="h-5 w-5" />
+              </button>
+              <a
                 href={`/api/pdf/download?id=${pdf.id}`}
                 className="text-gray-500 hover:text-gray-700 p-1"
                 title="Download PDF"
@@ -130,6 +138,22 @@ export default function PdfItem({ pdf, keywords }) {
           ) : (
             <div className="p-3 border rounded bg-white max-h-60 overflow-y-auto text-sm">
               {content ? content.substring(0, 500) + '...' : 'No content available'}
+            </div>
+          )}
+          {showViewer && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded shadow-lg w-11/12 h-5/6 relative">
+                <button
+                  onClick={() => setShowViewer(false)}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                >
+                  <Close className="h-5 w-5" />
+                </button>
+                <iframe
+                  src={`/api/pdf/download?id=${pdf.id}&view=1`}
+                  className="w-full h-full"
+                />
+              </div>
             </div>
           )}
         </>
