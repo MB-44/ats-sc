@@ -3,6 +3,11 @@ import { readFile } from 'fs/promises';
 import { getPdfById } from '@/lib/db';
 
 
+interface Pdf {
+  path: string;
+  filename: string;
+}
+
 export async function GET(request: { url: string | URL; }) {
   try {
     const { searchParams } = new URL(request.url);
@@ -15,8 +20,11 @@ export async function GET(request: { url: string | URL; }) {
       );
     }
     
+
     const view = searchParams.get('view');
     const pdf = await getPdfById(id);
+    const pdf = await getPdfById(id) as Pdf | null;
+
     
     if (!pdf) {
       return NextResponse.json(
